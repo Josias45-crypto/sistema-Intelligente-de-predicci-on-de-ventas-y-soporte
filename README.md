@@ -1,6 +1,4 @@
-# Sistema Inteligente de Predicción de Ventas y Soporte
-
-Proyecto de análisis de datos para empresa de software
+#Sistema inteligente que analiza datos y apoya decisiones estratégicas mediante aprendizaje automático.
 
 ## Tecnologías
 - Pandas & NumPy — Ingeniería de características
