@@ -1,2 +1,1 @@
-# sistema-Intelligente-de-predicci-on-de-ventas-y-soporte
-Este proyecto consise en el desarrollo de un sistema inteligente de an{alisis y priecci{on aplicado a los datos reales de la empresa. El sistema tiene como objetivo transformar los datos generados por las operaciones diarias del negocio en informaci{on {util y accionable, perimitiendo a la empresa tomar mejores decisiones comerciales y operativas.
+#Sistema inteligente que analiza datos y apoya decisiones estratégicas mediante aprendizaje automático.
