@@ -245,4 +245,35 @@ with torch.no_grad():
     ultima_secuencia = X_tensor[-1].unsqueeze(0)
     pred_ing, pred_prod, pred_tipo = modelo(ultima_secuencia)
 
-    # Reconstruir ingreso rea
+    # Reconstruir ingreso real (des-escalar)
+    dummy = np.zeros((1, len(FEATURES_NUM)))
+    dummy[0][0] = pred_ing.item()
+    ingreso_predicho = scaler.inverse_transform(dummy)[0][0]
+
+    producto_predicho = le_producto.inverse_transform(
+        [pred_prod.argmax().item()]
+    )[0]
+
+    tipo_predicho = le_tipo.inverse_transform(
+        [pred_tipo.argmax().item()]
+    )[0]
+
+print(f"\n   Ingresos estimados     : S/. {ingreso_predicho:,.2f}")
+print(f"   Producto más vendido   : {producto_predicho}")
+print(f"   Tipo de cliente activo : {tipo_predicho}")
+
+# ── GUARDAR ────────────────────────────────────────
+prediccion = pd.DataFrame([{
+    "ingreso_estimado"    : round(ingreso_predicho, 2),
+    "producto_mas_vendido": producto_predicho,
+    "tipo_cliente_activo" : tipo_predicho,
+    "accuracy_producto_%" : round(acc_prod, 2),
+    "accuracy_tipo_%"     : round(acc_tipo, 2)
+}])
+
+prediccion.to_csv("data/outputs/prediccion_proxima_semana.csv", index=False)
+
+print("\n" + "=" * 60)
+print("   MODELO PYTORCH COMPLETADO")
+print("   data/outputs/prediccion_proxima_semana.csv")
+print("=" * 60)
