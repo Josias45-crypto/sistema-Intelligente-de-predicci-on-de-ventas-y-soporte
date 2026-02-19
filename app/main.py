@@ -36,6 +36,7 @@ with st.sidebar:
 
     pagina = st.selectbox("📂 Navegación", [
         "🏠 Inicio",
+        "📂 Cargar Datos",
         "📊 Análisis de Ventas",
         "🤖 Predicciones",
         "⚠️  Clientes en Riesgo",
@@ -65,3 +66,7 @@ elif pagina == "⚠️  Clientes en Riesgo":
 elif pagina == "💡 Recomendaciones":
     from components.recomendaciones import mostrar_recomendaciones
     mostrar_recomendaciones()
+
+elif pagina == "📂 Cargar Datos":
+    from components.cargar_datos import mostrar_carga
+    mostrar_carga()  
