@@ -51,17 +51,17 @@ if pagina == "🏠 Inicio":
     mostrar_inicio()
 
 elif pagina == "📊 Análisis de Ventas":
-    from app.components.ventas import mostrar_ventas
+    from components.ventas import mostrar_ventas
     mostrar_ventas()
 
 elif pagina == "🤖 Predicciones":
-    from app.components.predicciones import mostrar_predicciones
+    from components.predicciones import mostrar_predicciones
     mostrar_predicciones()
 
 elif pagina == "⚠️  Clientes en Riesgo":
-    from app.components.riesgo import mostrar_riesgo
+    from components.riesgo import mostrar_riesgo
     mostrar_riesgo()
 
 elif pagina == "💡 Recomendaciones":
-    from app.components.recomendaciones import mostrar_recomendaciones
+    from components.recomendaciones import mostrar_recomendaciones
     mostrar_recomendaciones()
