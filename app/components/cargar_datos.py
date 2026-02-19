@@ -33,6 +33,8 @@ def mostrar_carga():
             "fecha_venta": ["2023-01-15", "2023-01-20", "2023-02-01"]
         }))
 
+        st.info("💡 Si tu archivo tiene más columnas no hay problema, el sistema tomará solo las que necesita.")
+
     st.divider()
 
     # ── CARGA DE ARCHIVOS ──────────────────────────────
@@ -69,52 +71,63 @@ def mostrar_carga():
             else:
                 ventas = pd.read_excel(archivo_ventas)
 
-            # ── VALIDAR COLUMNAS ───────────────────────
-            cols_clientes = ["cliente_id", "nombre", "ciudad", "tipo_cliente"]
-            cols_ventas   = ["venta_id", "cliente_id", "producto", "precio", "fecha_venta"]
+            # ── VALIDAR COLUMNAS MÍNIMAS ───────────────
+            # Solo validamos las columnas esenciales
+            # Si tiene más columnas, no hay problema
+            cols_clientes_min = ["cliente_id"]
+            cols_ventas_min   = ["cliente_id", "producto", "precio", "fecha_venta"]
 
             errores = []
-            for col in cols_clientes:
+            for col in cols_clientes_min:
                 if col not in clientes.columns:
-                    errores.append(f"Falta columna '{col}' en clientes")
-            for col in cols_ventas:
+                    errores.append(f"❌ Falta columna '{col}' en clientes")
+            for col in cols_ventas_min:
                 if col not in ventas.columns:
-                    errores.append(f"Falta columna '{col}' en ventas")
+                    errores.append(f"❌ Falta columna '{col}' en ventas")
 
             if errores:
                 for error in errores:
-                    st.error(f"❌ {error}")
+                    st.error(error)
+                st.warning("💡 Revisa que tu archivo tenga las columnas mínimas requeridas.")
                 return
 
-            # ── GUARDAR DATOS ──────────────────────────
+            # ── GUARDAR DATOS RAW ──────────────────────
             os.makedirs("data/raw", exist_ok=True)
             clientes.to_csv("data/raw/clientes.csv", index=False)
             ventas.to_csv("data/raw/ventas.csv",     index=False)
 
-            st.success("✅ Archivos cargados correctamente")
+            # ── PROCESAR EN TIEMPO REAL ────────────────
+            # ← CAMBIO: ahora procesamos automáticamente
+            from utils.procesador import procesar_datos
+            with st.spinner("⚙️ Analizando tus datos con IA..."):
+                resultados = procesar_datos(clientes, ventas)
+
+            st.success("✅ Datos cargados y analizados correctamente")
             st.divider()
 
-            # ── PREVIEW DE DATOS ───────────────────────
-            st.subheader("👁️ Vista previa de tus datos")
-
+            # ── MÉTRICAS INMEDIATAS ────────────────────
+            # ← CAMBIO: métricas reales del procesador
+            st.subheader("👁️ Resumen de tus datos")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("👤 Clientes", f"{len(clientes):,}")
+                st.metric("👤 Clientes", f"{resultados['total_clientes']:,}")
             with col2:
-                st.metric("💻 Ventas", f"{len(ventas):,}")
+                st.metric("💻 Ventas", f"{resultados['total_ventas']:,}")
             with col3:
                 st.metric("💰 Ingresos Totales",
-                          f"S/. {ventas['precio'].sum():,.0f}")
+                          f"S/. {resultados['total_ingresos']:,.0f}")
 
+            # ── PREVIEW DE DATOS ───────────────────────
             tab1, tab2 = st.tabs(["👤 Clientes", "💻 Ventas"])
             with tab1:
+                st.caption(f"Mostrando 10 de {len(clientes):,} registros")
                 st.dataframe(clientes.head(10), use_container_width=True)
             with tab2:
+                st.caption(f"Mostrando 10 de {len(ventas):,} registros")
                 st.dataframe(ventas.head(10), use_container_width=True)
 
-            # ── BOTÓN PARA ANALIZAR ────────────────────
             st.divider()
-            st.info("✅ Datos listos. Ve a **Análisis de Ventas** para ver los resultados.")
+            st.info("✅ Datos listos. Ve a cualquier sección del menú para ver el análisis completo.")
 
         except Exception as e:
             st.error(f"❌ Error al procesar los archivos: {e}")
@@ -125,7 +138,8 @@ def mostrar_carga():
         # ── OPCIÓN DE USAR DATOS DE PRUEBA ────────────
         st.divider()
         st.subheader("🧪 ¿No tienes datos aún?")
-        if st.button("Usar datos de prueba"):
+        st.caption("Genera datos de ejemplo para explorar el sistema")
+        if st.button("🚀 Usar datos de prueba"):
             import subprocess
             with st.spinner("Generando datos de prueba..."):
                 subprocess.run(["python", "src/generar_datos.py"])
